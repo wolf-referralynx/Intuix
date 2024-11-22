@@ -1,0 +1,19 @@
+{
+  "name": "intuix",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "build": "cmake-js build",
+    "start": "node .",
+    "clean": "rm -r -f build"
+  },
+  "dependencies": {
+    "cmake-js": "7.3.0"
+  },
+  "binary": {
+    "napi_versions": [7]
+  },
+  "author": "",
+  "license": "ISC",
+  "description": ""
+}

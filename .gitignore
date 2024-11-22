@@ -1,0 +1,43 @@
+# Dependency directories
+node_modules/
+deps/
+
+# Build directories
+build/
+dist/
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# OS-generated files
+.DS_Store
+Thumbs.db
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# IDE and editor-specific files
+.vscode/
+.idea/
+*.swp
+
+# Generated files and packages
+*.tgz
+*.lock
+
+# Test outputs
+coverage/
+*.lcov
+
+# Temporary files
+*.tmp
+*.temp
+
+# Ignore production build results
+out/
