@@ -1,6 +1,6 @@
-const intuix = require('./src/intuixBindings'); // Import centralized module
-const ImGui = require('./src/imguiBindings'); // Import ImGui bindings
-const Glfw = require('./src/glfwBindings'); // Import Glfw bindings
+const intuix    = require('./src/intuixBindings'); // Import centralized module
+const ImGui     = require('./src/imguiBindings'); // Import ImGui bindings
+const Glfw      = require('./src/glfwBindings'); // Import Glfw bindings
 
 const state = {
     displayW: 2180,
@@ -22,14 +22,13 @@ Glfw.setWindowTitle(state.windowPtr, "Intuix");
 
 // Multi-line Text Edit
 let textBuffer = `
-state.dynamicWindows.push({
-    title: "Dynamic Window " + (state.dynamicWindows.length + 1),
-    content: "This is dynamically created window #" + (state.dynamicWindows.length + 1),
-    isOpen: true
-});
+// state.dynamicWindows.push({
+//     title: "Dynamic Window " + (state.dynamicWindows.length + 1),
+//     content: "This is dynamically created window #" + (state.dynamicWindows.length + 1),
+//     isOpen: true
+// });
 `;
 
-//const dynamicWindows = [];
 //Function to render dynamic windows
 const renderDynamicWindows = () => {
     for (let i = 0; i < state.dynamicWindows.length; i++) {
@@ -48,9 +47,9 @@ const renderDynamicWindows = () => {
 };
 
 // Function to evaluate and run the script
-const runScript = ()=> {
+const runScript = (script)=> {
     try {
-        eval(textBuffer); // Dynamically evaluate the script code
+        eval(script); // Dynamically evaluate the script code
     } catch (err) {
         console.error("Script error:", err);
     }
@@ -86,8 +85,7 @@ while (!Glfw.windowShouldClose()) {
         
         // Create a button with a click event that dynamically changes the window title.
         if (ImGui.button("Execute JS")) {
-            console.log(textBuffer)
-            runScript();
+            runScript(textBuffer);
         }
         if(state.useButtonStyle){
             ImGui.popStyleColor(3);
@@ -98,14 +96,16 @@ while (!Glfw.windowShouldClose()) {
         if (result.changed) {
             textBuffer = result.buffer; // Update buffer with new content
         }
-
-
         renderDynamicWindows();
     }
     // End the window
     ImGui.end();
 
     if (ImGui.begin("Text Box Window", 0)) {
+        if (ImGui.button("Execute JS")) {
+            runScript(state.editor.getSelectedText());
+        }
+
         /** Color Text Editor */
         if(!state.editor){
             state.editor = new ImGui.colorTextEditor("Initial Text ");
@@ -113,9 +113,11 @@ while (!Glfw.windowShouldClose()) {
         
         // Set text
         if(!state.textIsSet){
-            state.editor.setText("Hello, world!");
+            state.editor.setText("");
             state.textIsSet = true;
         }
+
+        //state.editor.identifyFoldableRegions();
         
         // Get text
         //console.log(editor.getText()); // Outputs: "Hello, world!"
@@ -125,6 +127,8 @@ while (!Glfw.windowShouldClose()) {
     
     }
     ImGui.end();
+
+
 
     if(state.displayDemoWindow){
         ImGui.showDemoWindow();

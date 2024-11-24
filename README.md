@@ -41,7 +41,7 @@ ImGui is known for its versatility and simplicity in C++ development, but it tra
 #### Example usage:
 
 ```js
-const intuix = require('./build/Release/Lynx.node');
+const intuix = require('./build/Release/intuix.node');
 
 const displayW = 1280;
 const displayH = 1024;

@@ -25,6 +25,15 @@ std::string ColorTextEditor::GetText() const {
     return editor->GetText();
 }
 
+std::string ColorTextEditor::GetSelectedText() const {
+    if (!editor) {
+        throw std::runtime_error("Editor instance is null in GetText");
+    }
+    return editor->GetSelectedText();
+}
+
+
+
 void ColorTextEditor::Render(const std::string& title) {
     if (!editor) {
         throw std::runtime_error("Editor instance is null in Render");
@@ -166,6 +175,49 @@ napi_value ColorTextEditor::GetTextMethod(napi_env env, napi_callback_info info)
     return result;
 }
 
+napi_value ColorTextEditor::GetSelectedTextMethod(napi_env env, napi_callback_info info) {
+    napi_value thisArg;
+    void* data;
+
+    // Retrieve the 'this' object
+    napi_status status = napi_get_cb_info(env, info, nullptr, nullptr, &thisArg, &data);
+    if (status != napi_ok) {
+        napi_throw_error(env, nullptr, "Failed to retrieve 'this' in GetText");
+        return nullptr;
+    }
+
+    // Unwrap the native instance
+    status = napi_unwrap(env, thisArg, &data);
+    if (status != napi_ok || !data) {
+        napi_throw_error(env, nullptr, "Invalid editor instance in GetText");
+        return nullptr;
+    }
+
+    auto* instance = static_cast<ColorTextEditor*>(data);
+    if (!instance || !instance->editor) {
+        napi_throw_error(env, nullptr, "Editor instance is null in GetText");
+        return nullptr;
+    }
+
+    // Get the text from the editor
+    std::string text;
+    try {
+        text = instance->GetSelectedText();
+    } catch (const std::exception& e) {
+        napi_throw_error(env, nullptr, e.what());
+        return nullptr;
+    }
+
+    napi_value result;
+    status = napi_create_string_utf8(env, text.c_str(), NAPI_AUTO_LENGTH, &result);
+    if (status != napi_ok) {
+        napi_throw_error(env, nullptr, "Failed to create string in GetText");
+        return nullptr;
+    }
+
+    return result;
+}
+
 napi_value ColorTextEditor::RenderMethod(napi_env env, napi_callback_info info) {
     napi_value thisArg;
     void* data;
@@ -221,6 +273,7 @@ napi_value ColorTextEditor::Init(napi_env env, napi_value exports) {
     napi_property_descriptor properties[] = {
         { "setText", 0, SetTextMethod, 0, 0, 0, napi_default, 0 },
         { "getText", 0, GetTextMethod, 0, 0, 0, napi_default, 0 },
+        { "getSelectedText", 0, GetSelectedTextMethod, 0, 0, 0, napi_default, 0 },
         { "render", 0, RenderMethod, 0, 0, 0, napi_default, 0 },
     };
 
