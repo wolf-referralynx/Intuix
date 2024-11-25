@@ -5,7 +5,7 @@
   "scripts": {
     "build": "cmake-js build",
     "start": "node .",
-    "inspect": "node --inspect .",
+    "inspect": "node --inspect=0.0.0.0:9229 .",
     "clean": "rm -r -f build"
   },
   "dependencies": {

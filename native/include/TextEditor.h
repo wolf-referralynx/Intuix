@@ -37,6 +37,8 @@ public:
 		Max
 	};
 
+	
+
 	enum class SelectionMode{
 		Normal,
 		Word,
@@ -224,6 +226,8 @@ public:
 	static const Palette& GetLightPalette();
 	static const Palette& GetRetroBluePalette();
 
+	static const Palette& GetVSDarkPalette();
+
 private:
 	typedef std::vector<std::pair<std::regex, PaletteIndex>> RegexList;
 
@@ -300,6 +304,9 @@ private:
 	void HandleMouseInputs();
 	void Render();
 
+	void ToggleComment();
+	void ToggleCommentLine(int line);
+
 	float mLineSpacing;
 	Lines mLines;
 	EditorState mState;
@@ -331,4 +338,6 @@ private:
 	Coordinates mInteractiveStart, mInteractiveEnd;
 	
 	float mLastClick;
+
+	
 };

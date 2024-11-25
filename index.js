@@ -46,6 +46,7 @@ const renderDynamicWindows = () => {
     }
 };
 
+
 // Function to evaluate and run the script
 const runScript = (script)=> {
     try {
@@ -101,8 +102,20 @@ while (!Glfw.windowShouldClose()) {
     // End the window
     ImGui.end();
 
+    let initialText = 
+`state.dynamicWindows.push({
+    title: "Dynamic Window " + (state.dynamicWindows.length + 1),
+    content: "This is dynamically created window #" + (state.dynamicWindows.length + 1),
+    isOpen: true
+});
+        `;
+
     if (ImGui.begin("Text Box Window", 0)) {
-        if (ImGui.button("Execute JS")) {
+        if (ImGui.button("EX All")) {
+            runScript(state.editor.getText());
+        }
+        ImGui.sameLine();
+        if (ImGui.button("EX Selected")) {
             runScript(state.editor.getSelectedText());
         }
 
@@ -113,7 +126,7 @@ while (!Glfw.windowShouldClose()) {
         
         // Set text
         if(!state.textIsSet){
-            state.editor.setText("");
+            state.editor.setText(initialText);
             state.textIsSet = true;
         }
 
