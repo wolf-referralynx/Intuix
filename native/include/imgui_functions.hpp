@@ -34,6 +34,8 @@ namespace im_gui {
     napi_value PopTextWrapPos(napi_env env, napi_callback_info info);
     napi_value SameLine(napi_env env, napi_callback_info info);
     napi_value SmallButton(napi_env env, napi_callback_info info);
+    napi_value PushFont(napi_env env, napi_callback_info info);
+    napi_value PopFont(napi_env env, napi_callback_info info);
 }
 
 

@@ -1,4 +1,5 @@
 #define GL_SILENCE_DEPRECATION
+#define STB_IMAGE_IMPLEMENTATION
 
 #include "include/glfw_functions.hpp"
 #include <GLFW/glfw3.h>
@@ -6,9 +7,9 @@
 #include "imgui_impl_opengl3.h"
 #include "imgui_impl_glfw.h"
 #include <map>
-//#include <stb_image.h>
 
 #include "include/config_fonts.hpp"
+#include "include/texture.h"
 
 GLFWwindow* window = nullptr;
 GLFWmonitor** monitors;
@@ -96,6 +97,8 @@ namespace glfw {
         ImGui_ImplOpenGL3_Init(glsl_version);
 
         ConfigFontsApp(fonts);
+
+        bool ret = asset::LoadTextureFromAtlas();
 
         /** Wrap the GLFWwindow pointer in a napi_value */
         napi_value jsWindow;

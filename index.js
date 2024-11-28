@@ -1,6 +1,8 @@
 const intuix    = require('./src/intuixBindings'); // Import centralized module
 const ImGui     = require('./src/imguiBindings'); // Import ImGui bindings
 const Glfw      = require('./src/glfwBindings'); // Import Glfw bindings
+const { ImVec2 }    = require('./src/imvec2');
+const { icons } = require('./src/icons')
 
 const state = {
     displayW: 2180,
@@ -12,9 +14,16 @@ const state = {
     textBoxSize: { x: 600, y: 200 },
     useButtonStyle: false,
     editor: null,
-    dynamicWindows: []
+    dynamicWindows: [],
 
 }
+
+// const font1 = 0x7f84fef24600n;
+// const font2 = 0x7f84fef24700n;
+// const font3 = 0x7f84fef247c0n;
+// const font4 = 0x7f84fef24880n;
+// const font5 = 0x7f84fef24940n;
+// const font6 = 0x7f84fef24a00n;
 
 Glfw.init();
 state.windowPtr = Glfw.createWindow(state.displayW, state.displayH);
@@ -84,19 +93,27 @@ while (!Glfw.windowShouldClose()) {
             ImGui.pushStyleColor(ImGui.ImGuiCol_ButtonActive, 0.6, 0.0, 0.0, 1.0);  // Button active: Deep red
         }
         
-        // Create a button with a click event that dynamically changes the window title.
-        if (ImGui.button("Execute JS")) {
+        // Create a button with a click event that executes JS in the TextBlock.
+
+        // if (ImGui.button("Execute JS")) {
+        //     runScript(textBuffer);
+        // }
+        const vec = new ImVec2(24.00, 24.00);
+        if(ImGui.button(icons.ICON_FA_ARROW_CIRCLE_RIGHT, vec)){
             runScript(textBuffer);
         }
+        
         if(state.useButtonStyle){
             ImGui.popStyleColor(3);
         }
         
+        ImGui.pushFont(5);
         const result = ImGui.inputTextMultiline("###Editor", textBuffer, state.bufferSize, state.textBoxSize);
         // Check if text was changed
         if (result.changed) {
             textBuffer = result.buffer; // Update buffer with new content
         }
+        ImGui.popFont();
         renderDynamicWindows();
     }
     // End the window
@@ -120,9 +137,13 @@ while (!Glfw.windowShouldClose()) {
         }
 
         /** Color Text Editor */
+        //const font0 = ImGui.robotoRegular18;
+        //console.log(font0);
+        //ImGui.pushFont(5);
         if(!state.editor){
             state.editor = new ImGui.colorTextEditor("Initial Text ");
         }
+        //ImGui.popFont();
         
         // Set text
         if(!state.textIsSet){

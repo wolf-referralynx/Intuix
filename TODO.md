@@ -13,4 +13,5 @@
     - [ ] Complete the VSCode Style implementation
 
 ### Textures
+- [ ] Re-implement <glad>
 - [ ] Implement Texture Handling so that I can use FontAwesome Icons

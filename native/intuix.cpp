@@ -12,6 +12,7 @@
 #include "include/imgui_bindings.hpp"
 #include "include/color_text_editor.h"
 #include "include/imgui_image.h"
+#include "include/imgui_functions.hpp"
 
 namespace {
     /** Entry Point */
@@ -27,17 +28,17 @@ namespace {
             
         };
 
-        // Add ImGuiCol_Button
+        /** Add ImGuiCol_Button */
         napi_value button;
         napi_create_int32(env, ImGuiCol_Button, &button);
         napi_set_named_property(env, exports, "imgui_ImGuiCol_Button", button);
 
-        // Add ImGuiCol_ButtonHovered
+        /** Add ImGuiCol_ButtonHovered */
         napi_value buttonHovered;
         napi_create_int32(env, ImGuiCol_ButtonHovered, &buttonHovered);
         napi_set_named_property(env, exports, "imgui_ImGuiCol_ButtonHovered", buttonHovered);
 
-        // Add ImGuiCol_ButtonActive
+        /** Add ImGuiCol_ButtonActive */
         napi_value buttonActive;
         napi_create_int32(env, ImGuiCol_ButtonActive, &buttonActive);
         napi_set_named_property(env, exports, "imgui_ImGuiCol_ButtonActive", buttonActive);
@@ -49,7 +50,14 @@ namespace {
         napi_create_int32(env, ImGuiHoveredFlags_DelayShort, &delayShortFlag);
         napi_set_named_property(env, exports, "imgui_HoveredFlags_DelayShort", delayShortFlag);
 
-        //exports = ColorTextEditor::Init(env, exports); 
+        /** Add PushFont */
+        
+
+        /** Add PopFont */
+        napi_value popFontFn;
+        napi_create_function(env, "imgui_popFont", NAPI_AUTO_LENGTH, im_gui::PopFont, nullptr, &popFontFn);
+        napi_set_named_property(env, exports, "imgui_popFont", popFontFn);
+
 
         return exports;
     }

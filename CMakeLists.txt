@@ -20,6 +20,11 @@ FetchContent_MakeAvailable(glfw)
 FetchContent_Declare(fmt GIT_REPOSITORY https://github.com/fmtlib/fmt)
 FetchContent_MakeAvailable(fmt)
 
+## GLAD ##
+add_library(glad STATIC "deps/glad/src/glad.c")   
+target_link_libraries(glad PUBLIC ${CMAKE_DL_LIBS})
+target_include_directories(glad PUBLIC "deps/glad/include")
+
 # IMGUI
 set(IMGUI_HEADERS
     deps/imgui/imconfig.h
@@ -76,7 +81,7 @@ file(GLOB SOURCE_FILES
 
 add_library(${PROJECT_NAME} SHARED ${SOURCE_FILES} ${CMAKE_JS_SRC})
 set_target_properties(${PROJECT_NAME} PROPERTIES PREFIX "" SUFFIX ".node")
-target_link_libraries(${PROJECT_NAME} ${CMAKE_JS_LIB} glfw imgui implot)
+target_link_libraries(${PROJECT_NAME} ${CMAKE_JS_LIB} glfw imgui implot glad fmt)
 
 # https://github.com/haruneko/cmake-js-example/blob/main/package.json
 # https://github.com/cmake-js/cmake-js

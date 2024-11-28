@@ -31,6 +31,7 @@ napi_value InitImGuiBindings(napi_env env, napi_value exports){
         ,{"imgui_popTextWrapPos", 0, im_gui::PopTextWrapPos, 0, 0, 0, napi_default, 0}
         ,{"imgui_sameLine", 0, im_gui::SameLine, 0, 0, 0, napi_default, 0}
         ,{"imgui_smallButton", 0, im_gui::SmallButton, 0, 0, 0, napi_default, 0}
+        ,{"imgui_pushFont", nullptr, im_gui::PushFont, nullptr, nullptr, nullptr, napi_default, nullptr }
     };
     napi_define_properties(env, exports, sizeof(imgui_desc) / sizeof(*imgui_desc), imgui_desc);
     return exports;

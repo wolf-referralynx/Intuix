@@ -1,7 +1,7 @@
 #include <node_api.h>
 #include "backends/imgui_impl_opengl3.h" 
 #include "backends/imgui_impl_glfw.h"
-
+#include <cstdio>
 namespace im_gui {
     napi_value ImplOpenGL3_NewFrame(napi_env env, napi_callback_info info) {
         // Call ImGui's OpenGL backend NewFrame function
@@ -559,5 +559,116 @@ namespace im_gui {
         return napiResult;
     }
 
+    /** Wrapper for ImGui::PushFont
+        Accepts a font pointer as a JavaScript `BigInt` (since ImFont* is a pointer). */
+    // napi_value PushFont(napi_env env, napi_callback_info info) {
+    //     size_t argc = 1;
+    //     napi_value args[1];
+    //     napi_status status = napi_get_cb_info(env, info, &argc, args, nullptr, nullptr);
+    //     if (status != napi_ok || argc < 1) {
+    //         napi_throw_type_error(env, nullptr, "Expected one argument (BigInt for ImFont*)");
+    //         return nullptr;
+    //     }
+
+    //     // Ensure the argument is a BigInt
+    //     bool isBigInt;
+    //     int64_t fontAddress;
+    //     status = napi_get_value_bigint_int64(env, args[0], &fontAddress, &isBigInt);
+    //     if (status != napi_ok || !isBigInt) {
+    //         napi_throw_type_error(env, nullptr, "Argument must be a BigInt representing an ImFont*");
+    //         return nullptr;
+    //     }
+
+    //     // Cast the BigInt to an ImFont* and validate it
+    //     ImFont* font = reinterpret_cast<ImFont*>(fontAddress);
+    //     printf("Received font pointer: %p\n", font);
+
+    //     if (font == nullptr) {
+    //         napi_throw_type_error(env, nullptr, "Font pointer is null");
+    //         return nullptr;
+    //     }
+
+    //     // Ensure the ImGui context is valid
+    //     if (ImGui::GetCurrentContext() == nullptr) {
+    //         napi_throw_error(env, nullptr, "ImGui context is not initialized");
+    //         return nullptr;
+    //     }
+
+    //     // Push the font
+    //     try {
+    //         ImGui::PushFont(font);
+    //         printf("Font pushed successfully: %p\n", font);
+    //     } catch (...) {
+    //         napi_throw_error(env, nullptr, "Exception occurred while pushing the font");
+    //         return nullptr;
+    //     }
+
+    //     return nullptr; // Void return
+    // }
+
+    napi_value PushFont(napi_env env, napi_callback_info info) {
+        size_t argc = 1;
+        napi_value args[1];
+        napi_status status = napi_get_cb_info(env, info, &argc, args, nullptr, nullptr);
+
+        // Ensure the correct number of arguments
+        if (status != napi_ok || argc < 1) {
+            napi_throw_type_error(env, nullptr, "Expected one argument (integer for font index)");
+            return nullptr;
+        }
+
+        // Get the integer index from the arguments
+        int32_t fontIndex;
+        status = napi_get_value_int32(env, args[0], &fontIndex);
+        if (status != napi_ok) {
+            napi_throw_type_error(env, nullptr, "Argument must be an integer representing the font index");
+            return nullptr;
+        }
+
+        // Ensure the ImGui context is valid
+        if (ImGui::GetCurrentContext() == nullptr) {
+            napi_throw_error(env, nullptr, "ImGui context is not initialized");
+            return nullptr;
+        }
+
+        // Get the ImGuiIO object and ensure fonts are available
+        ImGuiIO& io = ImGui::GetIO();
+        if (io.Fonts->Fonts.empty()) {
+            napi_throw_error(env, nullptr, "No fonts available in io.Fonts. Ensure fonts are added and built.");
+            return nullptr;
+        }
+
+        // Validate the font index
+        if (fontIndex < 0 || fontIndex >= static_cast<int32_t>(io.Fonts->Fonts.size())) {
+            napi_throw_range_error(env, nullptr, "Font index out of range");
+            return nullptr;
+        }
+
+        // Retrieve the font pointer using the index
+        ImFont* font = io.Fonts->Fonts[fontIndex];
+        if (font == nullptr) {
+            napi_throw_error(env, nullptr, "Font pointer is null at the specified index");
+            return nullptr;
+        }
+
+        // Push the font
+        try {
+            ImGui::PushFont(font);
+            //printf("Font pushed successfully at index %d: %p\n", fontIndex, font);
+        } catch (...) {
+            napi_throw_error(env, nullptr, "Exception occurred while pushing the font");
+            return nullptr;
+        }
+
+        return nullptr; // Void return
+    }
+
+
+    /** Wrapper for ImGui::PopFont
+        Pops the current font. */
+    napi_value PopFont(napi_env env, napi_callback_info info) {
+        ImGui::PopFont();
+        return nullptr; // Void return
+    }
 
 }
