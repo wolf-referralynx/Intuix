@@ -9,7 +9,6 @@
 void ConfigFontsApp(std::map<std::string,ImFont*>& Fonts){
 
     ImGuiIO &io = ImGui::GetIO();
-
     io.Fonts->Clear();
 
     ImFontConfig font_cfg;
@@ -47,8 +46,8 @@ void ConfigFontsApp(std::map<std::string,ImFont*>& Fonts){
     ImFont* font5 = io.Fonts->AddFontFromMemoryTTF(fa_solid_900_ttf, fa_solid_900_ttf_len, 14.0f, &icons_config, fa_ranges);
 
     ImStrncpy(font_cfg.Name, "Roboto Mono Regular", 40);
-    Fonts[font_cfg.Name] = io.Fonts->AddFontFromMemoryTTF(RobotoMono_Regular_ttf, RobotoMono_Regular_ttf_len, 18.0f, &font_cfg);
-    ImFont* font6 = io.Fonts->AddFontFromMemoryTTF(fa_solid_900_ttf, fa_solid_900_ttf_len, 14.0f, &icons_config, fa_ranges);
+    Fonts[font_cfg.Name] = io.Fonts->AddFontFromMemoryTTF(RobotoMono_Regular_ttf, RobotoMono_Regular_ttf_len, 20.0f, &font_cfg);
+    ImFont* font6 = io.Fonts->AddFontFromMemoryTTF(fa_solid_900_ttf, fa_solid_900_ttf_len, 20.0f, &icons_config, fa_ranges);
 
     io.Fonts->Build(); 
 

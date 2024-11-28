@@ -49,10 +49,7 @@ namespace {
         napi_value delayShortFlag;
         napi_create_int32(env, ImGuiHoveredFlags_DelayShort, &delayShortFlag);
         napi_set_named_property(env, exports, "imgui_HoveredFlags_DelayShort", delayShortFlag);
-
-        /** Add PushFont */
         
-
         /** Add PopFont */
         napi_value popFontFn;
         napi_create_function(env, "imgui_popFont", NAPI_AUTO_LENGTH, im_gui::PopFont, nullptr, &popFontFn);

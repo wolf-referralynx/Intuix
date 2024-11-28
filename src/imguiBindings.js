@@ -34,7 +34,6 @@ const ImGui = {
     ,image: intuix.imgui_image
     ,pushFont: intuix.imgui_pushFont
     ,popFont: intuix.imgui_popFont
-    ,robotoRegular18: intuix.imgui_roboto_regular_18
 
 };
 

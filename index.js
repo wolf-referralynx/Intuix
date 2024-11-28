@@ -94,12 +94,8 @@ while (!Glfw.windowShouldClose()) {
         }
         
         // Create a button with a click event that executes JS in the TextBlock.
-
-        // if (ImGui.button("Execute JS")) {
-        //     runScript(textBuffer);
-        // }
-        const vec = new ImVec2(24.00, 24.00);
-        if(ImGui.button(icons.ICON_FA_ARROW_CIRCLE_RIGHT, vec)){
+        //const vec = new ImVec2(24.00, 24.00);
+        if(ImGui.button(icons.ICON_FA_ARROW_CIRCLE_RIGHT, new ImVec2(24.00, 24.00))){
             runScript(textBuffer);
         }
         
@@ -128,22 +124,31 @@ while (!Glfw.windowShouldClose()) {
         `;
 
     if (ImGui.begin("Text Box Window", 0)) {
-        if (ImGui.button("EX All")) {
+        if (ImGui.button(icons.ICON_FA_ARROW_CIRCLE_RIGHT, new ImVec2(24.00, 24.00))) {
             runScript(state.editor.getText());
         }
+        
+        if (ImGui.isItemHovered()) {
+            ImGui.beginTooltip();
+            ImGui.text("Execute All");
+            ImGui.endTooltip();
+        }
+        
         ImGui.sameLine();
-        if (ImGui.button("EX Selected")) {
+        if (ImGui.button(icons.ICON_FA_ARROW_ALT_CIRCLE_RIGHT, new ImVec2(24.00, 24.00))) {
             runScript(state.editor.getSelectedText());
         }
 
+        if (ImGui.isItemHovered()) {
+            ImGui.beginTooltip();
+            ImGui.text("Execute Selected");
+            ImGui.endTooltip();
+        }
+
         /** Color Text Editor */
-        //const font0 = ImGui.robotoRegular18;
-        //console.log(font0);
-        //ImGui.pushFont(5);
         if(!state.editor){
             state.editor = new ImGui.colorTextEditor("Initial Text ");
         }
-        //ImGui.popFont();
         
         // Set text
         if(!state.textIsSet){
