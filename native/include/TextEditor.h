@@ -37,8 +37,6 @@ public:
 		Max
 	};
 
-	
-
 	enum class SelectionMode{
 		Normal,
 		Word,
@@ -66,20 +64,18 @@ public:
 		static Coordinates Invalid() { static Coordinates invalid(-1, -1); return invalid; }
 
 		bool operator ==(const Coordinates& o) const{
-			return
-				mLine == o.mLine &&
-				mColumn == o.mColumn;
+			return mLine == o.mLine && mColumn == o.mColumn;
 		}
 
 		bool operator !=(const Coordinates& o) const{
-			return
-				mLine != o.mLine ||
-				mColumn != o.mColumn;
+			return mLine != o.mLine || mColumn != o.mColumn;
 		}
 
 		bool operator <(const Coordinates& o) const{
-			if (mLine != o.mLine)
+			if (mLine != o.mLine){
 				return mLine < o.mLine;
+			}
+				
 			return mColumn < o.mColumn;
 		}
 
@@ -177,6 +173,7 @@ public:
 	void Render(const char* aTitle, const ImVec2& aSize = ImVec2(), bool aBorder = false);
 	void SetText(const std::string& aText);
 	void SetTextLines(const std::vector<std::string>& aLines);
+
 	std::string GetText() const;
 	std::vector<std::string> GetTextLines() const;
 	std::string GetSelectedText() const;
@@ -225,7 +222,6 @@ public:
 	static const Palette& GetDarkPalette();
 	static const Palette& GetLightPalette();
 	static const Palette& GetRetroBluePalette();
-
 	static const Palette& GetVSDarkPalette();
 
 private:
@@ -320,7 +316,7 @@ private:
 	bool mScrollToCursor;
 	bool mScrollToTop;
 	bool mTextChanged;
-	float  mTextStart;                   // position (in pixels) where a code line starts relative to the left of the TextEditor.
+	float mTextStart;                   // position (in pixels) where a code line starts relative to the left of the TextEditor.
 	int  mLeftMargin;
 	bool mCursorPositionChanged;
 	int mColorRangeMin, mColorRangeMax;

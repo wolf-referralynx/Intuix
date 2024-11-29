@@ -2,6 +2,7 @@
 #include "backends/imgui_impl_opengl3.h" 
 #include "backends/imgui_impl_glfw.h"
 #include <cstdio>
+#include <iostream>
 namespace im_gui {
     napi_value ImplOpenGL3_NewFrame(napi_env env, napi_callback_info info) {
         // Call ImGui's OpenGL backend NewFrame function
@@ -113,36 +114,60 @@ namespace im_gui {
         return undefined;
     }
 
-    /** Wrap ImGui::Begin */
     napi_value Begin(napi_env env, napi_callback_info info) {
-        size_t argc = 2; // Expecting 2 arguments: window name (string) and optional flags (integer)
-        napi_value args[2];
-        napi_get_cb_info(env, info, &argc, args, nullptr, nullptr);
+        size_t argc = 3; // Expecting 3 arguments: window name (string), open state (boolean), and optional flags (integer)
+        napi_value args[3];
+        napi_status status = napi_get_cb_info(env, info, &argc, args, nullptr, nullptr);
 
-        if (argc < 1) {
-            napi_throw_error(env, nullptr, "ImGui::Begin requires at least one argument: the window name (string)");
+        // Check if enough arguments are provided
+        if (argc < 2) {
+            napi_throw_error(env, nullptr, "ImGui::Begin requires at least two arguments: window name (string) and open state (boolean)");
             return nullptr;
         }
 
-        // Retrieve the window name (string)
-        size_t str_len;
-        size_t str_read;
+        // **Retrieve the window name (string)**
         char window_name[256];
-        napi_get_value_string_utf8(env, args[0], window_name, sizeof(window_name), &str_read);
-
-        // Retrieve optional flags (integer)
-        int flags = 0;
-        if (argc > 1) {
-            napi_get_value_int32(env, args[1], &flags);
+        size_t str_len;
+        status = napi_get_value_string_utf8(env, args[0], window_name, sizeof(window_name), &str_len);
+        if (status != napi_ok) {
+            napi_throw_error(env, nullptr, "Failed to retrieve the window name (expected a string)");
+            return nullptr;
         }
 
-        // Call ImGui::Begin
-        bool result = ImGui::Begin(window_name, nullptr, flags);
+        // **Retrieve the open state (boolean)**
+        bool isOpen = true; // Default value
+        status = napi_get_value_bool(env, args[1], &isOpen);
+        if (status != napi_ok) {
+            napi_throw_error(env, nullptr, "Failed to retrieve the open state (expected a boolean)");
+            return nullptr;
+        }
 
-        // Return the result as a boolean
-        napi_value napi_result;
-        napi_get_boolean(env, result, &napi_result);
-        return napi_result;
+        // **Retrieve optional flags (integer)**
+        int flags = 0;
+        if (argc > 2) {
+            status = napi_get_value_int32(env, args[2], &flags);
+            if (status != napi_ok) {
+                napi_throw_error(env, nullptr, "Failed to retrieve the window flags (expected an integer)");
+                return nullptr;
+            }
+        }
+
+        // **Call ImGui::Begin**
+        bool result = ImGui::Begin(window_name, &isOpen, flags);
+
+        // **Return the updated `isOpen` state and the result**
+        napi_value result_object;
+        napi_create_object(env, &result_object);
+
+        napi_value updated_isOpen;
+        napi_get_boolean(env, isOpen, &updated_isOpen);
+        napi_set_named_property(env, result_object, "isOpen", updated_isOpen);
+
+        //napi_value napi_result;
+        //napi_get_boolean(env, result, &napi_result);
+        //napi_set_named_property(env, result_object, "result", napi_result);
+
+        return result_object;
     }
 
     /** Wrap ImGui::End */
@@ -662,7 +687,6 @@ namespace im_gui {
 
         return nullptr; // Void return
     }
-
 
     /** Wrapper for ImGui::PopFont
         Pops the current font. */

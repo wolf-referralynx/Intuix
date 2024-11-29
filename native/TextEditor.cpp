@@ -687,7 +687,6 @@ void TextEditor::Render() {
 	ImFont* font = io.Fonts->Fonts[5];
 	ImGui::PushFont(font);
 
-
 	/* Compute mCharAdvance regarding to scaled font size (Ctrl + mouse wheel)*/
 	const float fontSize = ImGui::GetFont()->CalcTextSizeA(ImGui::GetFontSize(), FLT_MAX, -1.0f, "#", nullptr, nullptr).x;
 	mCharAdvance = ImVec2(fontSize, ImGui::GetTextLineHeightWithSpacing() * mLineSpacing);
@@ -772,7 +771,7 @@ void TextEditor::Render() {
 				drawList->AddRectFilled(start, end, mPalette[(int)PaletteIndex::Breakpoint]);
 			}
 
-			// Draw error markers
+			/** Draw error markers */
 			auto errorIt = mErrorMarkers.find(lineNo + 1);
 			if (errorIt != mErrorMarkers.end()){
 				auto end = ImVec2(lineStartScreenPos.x + contentSize.x + 2.0f * scrollX, lineStartScreenPos.y + mCharAdvance.y);
@@ -814,13 +813,13 @@ void TextEditor::Render() {
 					auto timeEnd = std::chrono::system_clock::now();
 					auto diff = timeEnd - timeStart;
 					auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(diff).count();
-					if (elapsed > 400)
-					{
+					if (elapsed > 400) {
 						ImVec2 cstart(textScreenPos.x + cx, lineStartScreenPos.y);
 						ImVec2 cend(textScreenPos.x + cx + (mOverwrite ? mCharAdvance.x : 1.0f), lineStartScreenPos.y + mCharAdvance.y);
 						drawList->AddRectFilled(cstart, cend, mPalette[(int)PaletteIndex::Cursor]);
-						if (elapsed > 800)
+						if (elapsed > 800){
 							timeStart = timeEnd;
+						}
 					}
 				}
 			}

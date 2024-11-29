@@ -50,9 +50,4 @@ void ConfigFontsApp(std::map<std::string,ImFont*>& Fonts){
     ImFont* font6 = io.Fonts->AddFontFromMemoryTTF(fa_solid_900_ttf, fa_solid_900_ttf_len, 20.0f, &icons_config, fa_ranges);
 
     io.Fonts->Build(); 
-
-    /** Set as the default font */
-    // ImStrncpy(font_cfg.Name, "Roboto Regular-18", 40);
-    // ImFont* customFont = io.Fonts->AddFontFromMemoryTTF(Roboto_Regular_ttf, Roboto_Regular_ttf_len, 18.0f, &font_cfg);
-    // io.FontDefault = customFont;
 }
