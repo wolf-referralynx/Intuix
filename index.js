@@ -15,20 +15,50 @@ const state = {
     useButtonStyle: false,
     editor: null,
     dynamicWindows: [],
+    logs: [],
 }
+
+// Override console.log
+logEditor = new ImGui.colorTextEditor("");
+LogTextIsSet = false;
+
+const originalConsoleLog = console.log;
+console.log = (...args) => {
+    LogTextIsSet = false;
+    const message = args.map(arg => (typeof arg === 'object' ? JSON.stringify(arg, null ,2) : String(arg))).join(' ');
+    state.logs.push(message);
+    //originalConsoleLog(...args);
+};
 
 Glfw.init();
 state.windowPtr = Glfw.createWindow(state.displayW, state.displayH);
 Glfw.setWindowTitle(state.windowPtr, "Intuix");
 
-/** Multi-line Text Edit */
-let textBuffer = `
-// state.dynamicWindows.push({
-//     title: "Dynamic Window " + (state.dynamicWindows.length + 1),
-//     content: "This is dynamically created window #" + (state.dynamicWindows.length + 1),
-//     isOpen: true
-// });
-`;
+// Render logs in ImGui
+const renderLogs = () => {
+    ImGui.begin("Console Output", true);
+
+    if (ImGui.button("Clear Logs")) {
+        LogTextIsSet = false;
+        logEditor.setText("")
+        LogTextIsSet = true;
+        state.logs = [];
+    }
+
+    logEditor.render(); 
+
+    let textLogs = "";
+    state.logs.forEach(log => {
+        textLogs = textLogs+log+"\n";
+    });
+    
+    if(!LogTextIsSet){
+        logEditor.setText(textLogs)
+        LogTextIsSet = true;
+    }
+    
+    ImGui.end();
+};
 
 /** Function to render dynamic windows */
 const renderDynamicWindows = () => {
@@ -41,7 +71,6 @@ const renderDynamicWindows = () => {
         }
     }
 };
-
 
 /** Function to evaluate and run the script */
 const runScript = (script)=> {
@@ -69,10 +98,7 @@ const endRenderLoop = ()=>{
     Glfw.swapBuffers();
 }
 
-while (!Glfw.windowShouldClose()) {
-    beginRenderLoop();
-
-    let initialText = 
+let initialText = 
 `state.dynamicWindows.push({
     title: "Dynamic Window " + (state.dynamicWindows.length + 1),
     content: "This is dynamically created window #" + (state.dynamicWindows.length + 1),
@@ -91,6 +117,9 @@ state.dynamicWindows.pop();
 
 console.log(state.dynamicWindows);
 `;
+
+while (!Glfw.windowShouldClose()) {
+    beginRenderLoop();
 
     if (ImGui.begin("Script Console", true)) {
         if (ImGui.button(icons.ICON_FA_ARROW_CIRCLE_RIGHT, new ImVec2(24.00, 24.00))) {
@@ -118,22 +147,23 @@ console.log(state.dynamicWindows);
         if(!state.editor){
             state.editor = new ImGui.colorTextEditor("Initial Text ");
         }
-        
-        // Set text
         if(!state.textIsSet){
             state.editor.setText(initialText);
             state.textIsSet = true;
         }
-
+        
         // Render editor
         state.editor.render("My Editor"); 
-        renderDynamicWindows();
     }
     ImGui.end();
 
     if(state.displayDemoWindow){
         ImGui.showDemoWindow();
     }
+
+    /** Dynamic Content */
+    renderDynamicWindows();
+    renderLogs();
 
     endRenderLoop();
 }
