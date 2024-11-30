@@ -53,6 +53,15 @@ public:
 			, mEnabled(false)
 		{}
 	};
+
+	struct FoldRegion {
+		int startLine;  // Start of the foldable block
+		int endLine;    // End of the foldable block
+		bool isFolded;  // Folding state
+	};
+
+	std::vector<FoldRegion> mFoldRegions; // Store all foldable regions
+
 	
 	struct Coordinates{
 		int mLine, mColumn;
@@ -223,6 +232,14 @@ public:
 	static const Palette& GetLightPalette();
 	static const Palette& GetRetroBluePalette();
 	static const Palette& GetVSDarkPalette();
+
+	bool LineStartsBlock(int line);
+	bool LineEndsBlock(int line);
+	void DetectFoldableRegions();
+	void DebugDumpFoldRegions() const;
+
+	void RenderFoldIcon(int line);
+	void ToggleFold(int line);
 
 private:
 	typedef std::vector<std::pair<std::regex, PaletteIndex>> RegexList;

@@ -52,6 +52,99 @@ TextEditor::TextEditor()
 TextEditor::~TextEditor(){
 }
 
+
+bool TextEditor::LineStartsBlock(int line) {
+    if (line >= mLines.size()) return false;  // Bounds check
+
+    const auto& glyphs = mLines[line];  // Get the line (vector of Glyphs)
+    std::string text;
+
+    // Collect visible text from glyphs
+    for (const auto& glyph : glyphs) {
+        if (!glyph.mComment && !glyph.mMultiLineComment) {
+            text += glyph.mChar;  // Append visible characters
+        }
+    }
+
+    // Remove leading/trailing whitespace
+    text.erase(0, text.find_first_not_of(" \t"));
+    text.erase(text.find_last_not_of(" \t") + 1);
+
+    // Check if the cleaned text starts with #region
+    if (text.rfind("#region", 0) == 0) {  // rfind with pos=0 ensures prefix match
+        return true;
+    }
+    return false;  // Not a block start
+}
+
+bool TextEditor::LineEndsBlock(int line) {
+    if (line >= mLines.size()) return false;  // Bounds check
+
+    const auto& glyphs = mLines[line];  // Get the line (vector of Glyphs)
+    std::string text;
+
+    // Collect visible text from glyphs
+    for (const auto& glyph : glyphs) {
+        if (!glyph.mComment && !glyph.mMultiLineComment) {
+            text += glyph.mChar;  // Append visible characters
+        }
+    }
+
+    // Remove leading/trailing whitespace
+    text.erase(0, text.find_first_not_of(" \t"));
+    text.erase(text.find_last_not_of(" \t") + 1);
+
+    // Check if the cleaned text matches #endregion
+    return text.rfind("#endregion", 0) == 0;  // rfind with pos=0 ensures prefix match
+}
+
+void TextEditor::RenderFoldIcon(int line) {
+    ImGui::SetCursorPosY(ImGui::GetCursorPosY() + line * ImGui::GetTextLineHeight());
+    if (ImGui::Button(mFoldRegions[line].isFolded ? "+" : "-", ImVec2(15, 15))) {
+        ToggleFold(line);  // Toggle the fold state
+    }
+}
+
+void TextEditor::ToggleFold(int line) {
+    for (auto& region : mFoldRegions) {
+        if (region.startLine == line) {
+            region.isFolded = !region.isFolded;  // Toggle fold state
+            break;
+        }
+    }
+}
+
+void TextEditor::DetectFoldableRegions() {
+    mFoldRegions.clear();  // Clear any existing fold regions
+    std::stack<int> regionStack;  // Stack to track nested regions
+
+    for (int i = 0; i < mLines.size(); ++i) {
+        if (LineStartsBlock(i)) {  // Start of a new region
+            regionStack.push(i);   // Push the start line onto the stack
+        } else if (LineEndsBlock(i)) {  // End of a region
+            if (!regionStack.empty()) {
+                int startLine = regionStack.top();  // Get the most recent region
+                regionStack.pop();                 // Remove it from the stack
+                mFoldRegions.push_back({startLine, i, false});  // Add the region
+            }
+        }
+    }
+	DebugDumpFoldRegions();
+}
+
+
+void TextEditor::DebugDumpFoldRegions() const {
+    std::cout << "Detected Foldable Regions:" << std::endl;
+    for (const auto& region : mFoldRegions) {
+        std::cout << "  Start Line: " << region.startLine
+                  << ", End Line: " << region.endLine
+                  << ", Is Folded: " << (region.isFolded ? "true" : "false") 
+                  << std::endl;
+    }
+    std::cout << "Total Regions: " << mFoldRegions.size() << std::endl;
+}
+
+
 void TextEditor::SetLanguageDefinition(const LanguageDefinition & aLanguageDef) {
 	mLanguageDefinition = aLanguageDef;
 	mRegexList.clear();
@@ -765,7 +858,6 @@ void TextEditor::Render() {
 
 			/** Draw breakpoints */
 			auto start = ImVec2(lineStartScreenPos.x + scrollX, lineStartScreenPos.y);
-
 			if (mBreakpoints.count(lineNo + 1) != 0) {
 				auto end = ImVec2(lineStartScreenPos.x + contentSize.x + 2.0f * scrollX, lineStartScreenPos.y + mCharAdvance.y);
 				drawList->AddRectFilled(start, end, mPalette[(int)PaletteIndex::Breakpoint]);
@@ -932,6 +1024,9 @@ void TextEditor::SetText(const std::string & aText) {
 		else {
 			mLines.back().emplace_back(Glyph(chr, PaletteIndex::Default));
 		}
+
+		// Code Folding
+		DetectFoldableRegions();
 	}
 	
 	mTextChanged = true;

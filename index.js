@@ -99,12 +99,13 @@ const endRenderLoop = ()=>{
 }
 
 let initialText = 
-`state.dynamicWindows.push({
+
+`
+state.dynamicWindows.push({
     title: "Dynamic Window " + (state.dynamicWindows.length + 1),
     content: "This is dynamically created window #" + (state.dynamicWindows.length + 1),
     isOpen: true
 });
-
 
 state.dynamicWindows = state.dynamicWindows.map((it)=>{
 	return {
@@ -116,6 +117,24 @@ state.dynamicWindows = state.dynamicWindows.map((it)=>{
 state.dynamicWindows.pop();
 
 console.log(state.dynamicWindows);
+
+#region Outer
+state.dynamicWindows.push({
+    title: "Dynamic Window " + (state.dynamicWindows.length + 1),
+    content: "This is dynamically created window " + (state.dynamicWindows.length + 1),
+    isOpen: true
+});
+
+#region Inner
+state.dynamicWindows = state.dynamicWindows.map((it) => {
+    return {
+        ...it,
+        isOpen: true
+    };
+});
+#endregion Inner
+#endregion Outer
+
 `;
 
 while (!Glfw.windowShouldClose()) {
